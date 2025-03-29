@@ -1,9 +1,13 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-public class ThreadPool {
+public class CustomThreadPoolmpl {
+}
+
+class ThreadPool {
     private final BlockingQueue<Runnable> taskQueue;
     private final List<PoolThreadRunnable> runnables = new ArrayList<>();
     private volatile boolean isStopped = false;
@@ -25,8 +29,10 @@ public class ThreadPool {
     public synchronized void execute(Runnable task) throws Exception {
         if (this.isStopped) throw
                 new IllegalStateException("ThreadPool is stopped");
-
-        this.taskQueue.put(task);
+        if (task != null) {
+            this.taskQueue.put(task);
+        } else
+            System.out.println("Null task not permitted. So skipping this task.");
     }
 
     public void stop() {
@@ -60,13 +66,14 @@ class PoolThreadRunnable implements Runnable {
     public void run() {
         this.thread = Thread.currentThread();
         while (!isStopped()) {
-            Runnable task = null;
             try {
-                task = taskQueue.take();
+                Runnable task = taskQueue.take();
+                Optional.ofNullable(task).ifPresentOrElse(Runnable::run, () -> {
+                    System.out.println("Null task is encountered");
+                });
             } catch (InterruptedException e) {
                 System.out.println("Thread is interrupted");
             }
-            task.run();
         }
 
     }
@@ -76,8 +83,9 @@ class PoolThreadRunnable implements Runnable {
     }
 
     public synchronized void doStop() {
+        System.out.println(String.format("Thread %s is stopped", thread.getName()));
         this.isStopped = true;
-        thread.interrupt();
+        this.thread.interrupt();
     }
 }
 
@@ -85,7 +93,7 @@ class Demo {
     public static void main(String[] args) throws Exception {
         ThreadPool threadPool = new ThreadPool(2, 3);
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
 
             int taskNo = i;
             threadPool.execute(() -> {
@@ -96,6 +104,7 @@ class Demo {
             });
         }
         threadPool.waitUntilAllTasksFinished();
+        threadPool.execute(null);
         threadPool.stop();
     }
 }

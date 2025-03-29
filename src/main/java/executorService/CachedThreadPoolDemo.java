@@ -5,6 +5,8 @@ import java.util.concurrent.Executors;
 
 public class CachedThreadPoolDemo {
     public static void main(String[] args) {
+        // Here we don't provide the number of threads, this is auto-scaling in nature.
+        // The max life of thread once its idle is 60 seconds, after which its killed.
         try (ExecutorService service = Executors.newCachedThreadPool()) {
             for (int i = 0; i < 10000; i++) {
                 service.execute(new TaskOne(i));

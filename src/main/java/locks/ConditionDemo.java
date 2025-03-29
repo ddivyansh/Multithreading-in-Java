@@ -10,6 +10,10 @@ public class ConditionDemo {
     private final Integer MAX_SIZE = 5;
     private final Lock lock = new ReentrantLock();
     private final Queue<Integer> buffer = new LinkedList<>();
+    /*
+    notFull: Indicates that the buffer is not full, so the producer can produce more items.
+    notEmpty: Indicates that the buffer is not empty, so the consumer can consume items.
+     */
     private final Condition bufferNotFull = lock.newCondition();
     private final Condition bufferNotEmpty = lock.newCondition();
 

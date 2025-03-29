@@ -32,6 +32,7 @@ public class SynchronisationDemo {
         System.out.println("Counter is : " + counter);
     }
 
+    //Method level synchronised keyword.
     private synchronized static void increment() {
         counter++;
     }

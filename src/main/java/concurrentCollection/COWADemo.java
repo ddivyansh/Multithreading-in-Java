@@ -1,14 +1,39 @@
 package concurrentCollection;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class COWADemo {
+    private static final Object lock = new Object();
+
     public static void main(String[] args) {
-        Simulation simulation = new Simulation();
-        simulation.simulate();
+//        Simulation simulation = new Simulation();
+//        simulation.simulate();
+        List<Integer> list = new ArrayList<>(Arrays.asList(2, 2, 3, 4, 5));
+        CopyOnWriteArrayList<Integer> copyOnWriteArrayList = new CopyOnWriteArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+        List<Integer> synchronisedList = Collections.synchronizedList(list);
+
+        Thread one = new Thread(() -> {
+            extractAndRemove(copyOnWriteArrayList, 2);
+        });
+
+        Runnable two = () -> {
+            extractAndRemove(copyOnWriteArrayList, 3);
+        };
+        one.start();
+//        new Thread(two).start();
+
+    }
+
+    private static void extractAndRemove(CopyOnWriteArrayList<Integer> synchronisedList, Integer target) {
+        synchronized (lock) {
+            for (Integer i : synchronisedList) {
+                if (i == target) { //2
+                    synchronisedList.remove(target);
+                    System.out.println(synchronisedList);
+                }
+            }
+        }
     }
 }
 
@@ -17,7 +42,7 @@ class Simulation {
 
     public Simulation() {
         list = new CopyOnWriteArrayList<>();
-        list.addAll(Arrays.asList(0,0,0,0,0,0,0,0));
+        list.addAll(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0));
     }
 
     public void simulate() {

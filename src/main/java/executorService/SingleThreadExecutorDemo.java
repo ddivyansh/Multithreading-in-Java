@@ -5,6 +5,8 @@ import java.util.concurrent.Executors;
 
 public class SingleThreadExecutorDemo {
     public static void main(String[] args) {
+        // try with resources because executor service implements the auto-closeable interface
+        // so we can use it with try-with resources. Single thread executor has ONE thread.
         try (ExecutorService service = Executors.newSingleThreadExecutor()) {
             for (int i = 0; i < 5; i++) {
                 service.execute(new Task(i));

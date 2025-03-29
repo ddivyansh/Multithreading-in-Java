@@ -30,8 +30,8 @@ public class ProducerConsumer {
 
 class Worker {
 
-    private int sequence = 0;
-    private final Integer top;
+    private int sequence = 0; // item in container
+    private final Integer top; //max capacity of the container
     private final Integer bottom;
     private final List<Integer> container;
     private final Object lock = new Object();
@@ -58,7 +58,7 @@ class Worker {
         }
     }
 
-    public void consume() throws InterruptedException {
+    public void  consume() throws InterruptedException {
         synchronized (lock) {
             while (true) {
                 if (container.size() == bottom) {

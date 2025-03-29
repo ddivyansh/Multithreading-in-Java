@@ -5,8 +5,8 @@ import java.util.concurrent.Executors;
 
 public class FixedThreadPoolDemo {
     public static void main(String[] args) {
+        // Here we have created a fixed thread pool of 2 threads
         try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
-
             for (int i = 0; i < 7; i++) {
                 executor.execute(new Work(i + 1));
             }
